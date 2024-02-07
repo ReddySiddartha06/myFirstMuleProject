@@ -6,22 +6,21 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c7e54e82-2dd3-498b-8d9a-74f64a4a56e4" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
 	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="d737cc04-3c51-4837-8d3a-cab0f3335804" file="config-dev.yaml" />
 	<flow name="myfirstmuleprojectFlow" doc:id="3cf67d04-eb2b-424f-b6ef-eb22095777d9" >
 		<http:listener doc:name="Listener" doc:id="631eec2c-c7f5-4a79-97a1-70c36bf96fef" config-ref="HTTP_Listener_config" path="/first"/>
-		<set-variable value="#[attributes.queryParams.name]" doc:name="name" doc:id="6fe61b72-e2a9-42d2-a470-869f6b780693" variableName="name"/>
-		<set-variable value="#[payload.job]" doc:name="job" doc:id="0cb45fb7-1c88-49f6-a24d-ea33a9f871b4" variableName="job"/>
-		<ee:transform doc:name="Transform Message" doc:id="8aa07b3b-4c0f-4209-87b3-dba4e49ecdc6" >
+		<ee:transform doc:name="Transform Message" doc:id="a46d84cc-9dd4-4092-b870-6cb71697c0ed" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"Name": vars.name,
-	"Job":vars.job
-}
-]]></ee:set-payload>
+	"message": p("log.message"),
+	"name":attributes.queryParams.name,
+	"job":attributes.queryParams.job
+}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="e39b0180-8f8f-4cc7-a65d-6c5323a0dec6" message="#[payload]"/>
